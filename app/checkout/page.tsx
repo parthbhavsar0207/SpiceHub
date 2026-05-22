@@ -5,12 +5,13 @@ import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { useCart } from "../../components/CartProvider";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function CheckoutPage() {
   const { cartItems, cartCount, cartTotal } = useCart();
   const [mounted, setMounted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [orderPlaced, setOrderPlaced] = useState(false);
+  const router = useRouter();
 
   // Form state
   const [formData, setFormData] = useState({
@@ -20,9 +21,9 @@ export default function CheckoutPage() {
     paymentMethod: "cod"
   });
 
-  const deliveryFee = 5.00; // Fixed delivery fee
+  const deliveryFee = 40.00; // Fixed delivery fee
   const finalAmount = cartTotal + deliveryFee;
-  const currencySymbol = cartItems[0]?.price.replace(/[0-9.]/g, '') || '$';
+  const currencySymbol = cartItems[0]?.price.replace(/[0-9.]/g, '') || '₹';
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -45,7 +46,7 @@ export default function CheckoutPage() {
     // Simulate API call
     setTimeout(() => {
       setIsSubmitting(false);
-      setOrderPlaced(true);
+      router.push('/order-success');
       // In a real app, we would clear the cart here
       // clearCart();
     }, 1500);
@@ -59,34 +60,6 @@ export default function CheckoutPage() {
           <div className="animate-pulse flex flex-col items-center">
             <div className="h-8 w-48 bg-gray-200 rounded mb-4"></div>
             <div className="h-4 w-64 bg-gray-200 rounded"></div>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-
-  if (orderPlaced) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex flex-col">
-        <Navbar />
-        <main className="flex-grow px-4 sm:px-6 py-12 max-w-7xl mx-auto w-full flex items-center justify-center">
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center max-w-lg">
-            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-              </svg>
-            </div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Order Confirmed!</h2>
-            <p className="text-gray-600 mb-8">
-              Thank you for your order. We have received it and will start preparing your delicious food right away!
-            </p>
-            <Link
-              href="/"
-              className="bg-orange-600 text-white px-8 py-3 rounded-full font-medium hover:bg-orange-700 transition-colors inline-block"
-            >
-              Back to Home
-            </Link>
           </div>
         </main>
         <Footer />
