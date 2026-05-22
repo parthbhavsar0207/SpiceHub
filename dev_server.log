@@ -1,0 +1,15 @@
+
+> temp@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+✓ Ready in 609ms
+
+○ Compiling / ...
+ GET / 200 in 6.3s (next.js: 5.6s, application-code: 694ms)
+ GET /cart 200 in 677ms (next.js: 562ms, application-code: 114ms)
+ GET /menu 200 in 594ms (next.js: 493ms, application-code: 101ms)
+ GET /cart 200 in 78ms (next.js: 5ms, application-code: 73ms)
+ GET /checkout 200 in 719ms (next.js: 623ms, application-code: 96ms)
