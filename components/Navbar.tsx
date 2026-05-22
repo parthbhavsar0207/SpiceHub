@@ -9,7 +9,7 @@ export default function Navbar() {
       </div>
       <div className="hidden md:flex space-x-8 text-gray-700 font-medium">
         <Link href="/" className="hover:text-orange-600 transition-colors">Home</Link>
-        <Link href="/#menu" className="hover:text-orange-600 transition-colors">Menu</Link>
+        <Link href="/menu" className="hover:text-orange-600 transition-colors">Menu</Link>
         <Link href="/#cart" className="hover:text-orange-600 transition-colors">Cart</Link>
         <Link href="/#login" className="hover:text-orange-600 transition-colors">Login</Link>
       </div>
