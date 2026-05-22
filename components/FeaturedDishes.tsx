@@ -1,4 +1,7 @@
+"use client";
+
 import React from "react";
+import { useCart } from "./CartProvider";
 
 const dishes = [
   {
@@ -28,6 +31,8 @@ const dishes = [
 ];
 
 export default function FeaturedDishes() {
+  const { addToCart } = useCart();
+
   return (
     <section className="px-6 py-16 max-w-7xl mx-auto">
       <div className="flex justify-between items-end mb-10">
@@ -55,7 +60,10 @@ export default function FeaturedDishes() {
               <h3 className="text-xl font-semibold text-gray-900 mb-2">{dish.name}</h3>
               <div className="flex justify-between items-center">
                 <span className="text-orange-600 font-bold text-lg">{dish.price}</span>
-                <button className="bg-gray-100 text-gray-900 w-10 h-10 rounded-full flex items-center justify-center hover:bg-orange-600 hover:text-white transition-colors">
+                <button
+                  onClick={() => addToCart({ id: `featured-${dish.id}`, name: dish.name, price: dish.price, image: dish.image })}
+                  className="bg-gray-100 text-gray-900 w-10 h-10 rounded-full flex items-center justify-center hover:bg-orange-600 hover:text-white transition-colors"
+                >
                   +
                 </button>
               </div>

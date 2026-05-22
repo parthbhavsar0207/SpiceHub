@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import { useCart } from "../../components/CartProvider";
 
 const menuItems = [
   {
@@ -76,6 +77,7 @@ const categories = ["All", "Pizza", "Burgers", "Pasta", "Drinks", "Desserts"];
 export default function MenuPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
+  const { addToCart } = useCart();
 
   const filteredItems = menuItems.filter((item) => {
     const matchesCategory = activeCategory === "All" || item.category === activeCategory;
@@ -153,7 +155,10 @@ export default function MenuPage() {
                   <p className="text-gray-600 text-sm mb-4 flex-grow">{item.description}</p>
                   <div className="flex justify-between items-center mt-auto">
                     <span className="text-orange-600 font-bold text-xl">{item.price}</span>
-                    <button className="bg-orange-600 text-white px-4 py-2 rounded-full font-medium hover:bg-orange-700 transition-colors">
+                    <button
+                      onClick={() => addToCart({ id: `menu-${item.id}`, name: item.name, price: item.price, image: item.image })}
+                      className="bg-orange-600 text-white px-4 py-2 rounded-full font-medium hover:bg-orange-700 transition-colors"
+                    >
                       Add to Cart
                     </button>
                   </div>
