@@ -34,7 +34,7 @@ export default function Navbar() {
           )}
         </Link>
 
-        <Link href="/#login" className="hover:text-orange-600 transition-colors">Login</Link>
+        <Link href="/login" className="hover:text-orange-600 transition-colors">Login</Link>
       </div>
       <div className="flex items-center gap-4">
         <button className="bg-orange-600 text-white px-6 py-2 rounded-full font-medium hover:bg-orange-700 transition-colors hidden md:block">
