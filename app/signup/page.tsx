@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -12,10 +13,53 @@ export default function SignupPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleSignup = (e: React.FormEvent) => {
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate account creation
-    router.push("/");
+    setError(null);
+    setSuccess(null);
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const { error: signupError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName,
+            phone_number: phoneNumber,
+          }
+        }
+      });
+
+      if (signupError) {
+        setError(signupError.message);
+        return;
+      }
+
+      setSuccess("Account created successfully! Redirecting to login...");
+      setTimeout(() => {
+        router.push("/login");
+      }, 2000);
+
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unexpected error occurred.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -39,6 +83,17 @@ export default function SignupPage() {
               Join our community of epicureans and<br />enjoy a seamless gourmet experience.
             </p>
           </div>
+
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md text-sm">
+              {error}
+            </div>
+          )}
+          {success && (
+            <div className="mb-4 p-3 bg-green-100 text-green-700 rounded-md text-sm">
+              {success}
+            </div>
+          )}
 
           <form onSubmit={handleSignup} className="space-y-5">
             {/* Full Name */}
@@ -145,9 +200,10 @@ export default function SignupPage() {
             <div className="pt-2">
               <button
                 type="submit"
-                className="w-full bg-[#9B3A2C] hover:bg-[#7A2A20] text-white py-3 rounded-full font-medium tracking-wide transition-colors"
+                disabled={isLoading}
+                className="w-full bg-[#9B3A2C] hover:bg-[#7A2A20] text-white py-3 rounded-full font-medium tracking-wide transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                CREATE ACCOUNT
+                {isLoading ? "CREATING..." : "CREATE ACCOUNT"}
               </button>
             </div>
           </form>

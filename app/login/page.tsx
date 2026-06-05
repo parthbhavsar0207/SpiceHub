@@ -3,17 +3,47 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real application, you would authenticate the user here.
-    // For now, we just redirect to the home page.
-    router.push("/");
+    setError(null);
+    setSuccess(null);
+    setIsLoading(true);
+
+    try {
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (signInError) {
+        setError(signInError.message);
+        return;
+      }
+
+      setSuccess("Logged in successfully! Redirecting...");
+      setTimeout(() => {
+        router.push("/");
+      }, 1000);
+
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unexpected error occurred.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -29,6 +59,17 @@ export default function LoginPage() {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md text-sm">
+              {error}
+            </div>
+          )}
+          {success && (
+            <div className="mb-4 p-3 bg-green-100 text-green-700 rounded-md text-sm">
+              {success}
+            </div>
+          )}
+
           <form className="space-y-6" onSubmit={handleLogin}>
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
@@ -89,9 +130,10 @@ export default function LoginPage() {
             <div>
               <button
                 type="submit"
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
+                disabled={isLoading}
+                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Sign in
+                {isLoading ? "Signing in..." : "Sign in"}
               </button>
             </div>
           </form>

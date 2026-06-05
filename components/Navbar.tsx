@@ -3,15 +3,39 @@
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { useCart } from "./CartProvider";
+import { supabase } from "@/lib/supabase";
+import { User } from "@supabase/supabase-js";
 
 export default function Navbar() {
   const { cartCount } = useCart();
   const [mounted, setMounted] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
+
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user || null);
+    };
+
+    checkUser();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setUser(session?.user || null);
+      }
+    );
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
   }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+  };
 
   return (
     <nav className="flex items-center justify-between p-6 bg-white shadow-sm sticky top-0 z-50">
@@ -34,7 +58,13 @@ export default function Navbar() {
           )}
         </Link>
 
-        <Link href="/login" className="hover:text-orange-600 transition-colors">Login</Link>
+        {user ? (
+          <button onClick={handleLogout} className="hover:text-orange-600 transition-colors font-medium">
+            Logout
+          </button>
+        ) : (
+          <Link href="/login" className="hover:text-orange-600 transition-colors">Login</Link>
+        )}
       </div>
       <div className="flex items-center gap-4">
         <button className="bg-orange-600 text-white px-6 py-2 rounded-full font-medium hover:bg-orange-700 transition-colors hidden md:block">
